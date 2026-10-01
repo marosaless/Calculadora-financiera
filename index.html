@@ -93,7 +93,6 @@
             transform: scale(1.2);
         }
 
-        /* Print styles */
         @media print {
             .no-print {
                 display: none !important;
@@ -102,15 +101,6 @@
                 background: white !important;
                 color: black !important;
             }
-            .print-full-width {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-        }
-
-        /* Glassmorphism subtle effect */
-        .glass-panel {
-            backdrop-filter: blur(8px);
         }
     </style>
 </head>
@@ -129,7 +119,7 @@
             </div>
             
             <div class="flex items-center space-x-3">
-                <!-- Selector de Divisa -->
+                <!-- Selector de Divisa Original -->
                 <div class="relative">
                     <select id="currencySelect" onchange="updateCurrency()" class="bg-navy-800 text-slate-100 text-xs sm:text-sm font-semibold rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-cobalt-500 cursor-pointer pr-7">
                         <option value="$">USD ($)</option>
@@ -149,7 +139,6 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full space-y-6">
 
-        <!-- Banner de Introducción -->
         <section class="bg-white dark:bg-navy-900 rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 dark:border-slate-800">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="space-y-1.5 max-w-3xl">
@@ -162,7 +151,7 @@
                         Herramienta de simulación económica basada en el modelo de anualidades vencidas y equivalencia financiera. Permite determinar el comportamiento exacto de amortización a capital e intereses, evaluando el saldo insoluto en el tiempo.
                     </p>
                 </div>
-                <!-- Botón de Instrucciones Rápidas -->
+                <!-- Botón de Instrucciones -->
                 <button onclick="toggleInstructions()" class="text-xs font-medium text-cobalt-600 dark:text-cobalt-400 hover:underline flex items-center space-x-1 shrink-0 bg-slate-100 dark:bg-navy-800 px-3 py-2 rounded-lg">
                     <i class="fa-solid fa-circle-info"></i>
                     <span>¿Cómo usar los controles?</span>
@@ -173,15 +162,15 @@
             <div id="instructionsPanel" class="hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-600 dark:text-slate-300 grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 dark:bg-navy-950 p-4 rounded-xl">
                 <div class="flex items-start space-x-2">
                     <span class="bg-cobalt-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shrink-0 font-bold">1</span>
-                    <p>Introduce o desliza el <strong>Monto</strong> deseado (Máximo 7 dígitos: 9.999.999).</p>
+                    <p>Introduce o desliza el <strong>Monto</strong> (Hasta 16 dígitos enteros y 2 decimales con formato de miles con punto "." y decimal con coma ",").</p>
                 </div>
                 <div class="flex items-start space-x-2">
                     <span class="bg-cobalt-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shrink-0 font-bold">2</span>
-                    <p>Ajusta la <strong>Tasa de Interés Anual</strong> (Máximo 100%) y el <strong>Plazo</strong> en meses (Máx 120).</p>
+                    <p>Ajusta la <strong>Tasa de Interés Anual</strong> de 0,00% a 100,00% y los <strong>Meses</strong> (máx 120).</p>
                 </div>
                 <div class="flex items-start space-x-2">
                     <span class="bg-cobalt-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shrink-0 font-bold">3</span>
-                    <p>Haz clic en <strong>Calcular Préstamo</strong> para actualizar las gráficas, tabla y generar tu PDF.</p>
+                    <p>Haz clic en <strong>Calcular Préstamo</strong> o activa la <strong>Conversión a Bolívares BCV</strong> en la cuota.</p>
                 </div>
             </div>
         </section>
@@ -195,51 +184,51 @@
                     <span>Parámetros Financieros</span>
                 </h3>
 
-                <!-- Input 1: Cantidad del Préstamo -->
+                <!-- Input 1: Cantidad del Préstamo (16 dígitos + 2 decimales) -->
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <label for="loanAmountInput" class="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">Monto del Préstamo</label>
                         <div class="flex items-center space-x-1 font-bold text-sm text-cobalt-600 dark:text-cobalt-400">
                             <span class="currencySymbol">$</span>
-                            <input type="text" id="loanAmountInput" oninput="handleAmountInput(this)" class="w-28 text-right bg-slate-100 dark:bg-navy-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 font-mono focus:outline-none focus:ring-2 focus:ring-cobalt-500" value="50,000">
+                            <input type="text" id="loanAmountInput" onblur="formatAmountOnBlur(this)" oninput="handleAmountInput(this)" class="w-48 text-right bg-slate-100 dark:bg-navy-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 font-mono focus:outline-none focus:ring-2 focus:ring-cobalt-500 text-xs sm:text-sm" value="50.000,00">
                         </div>
                     </div>
-                    <input type="range" id="loanAmountSlider" min="1000" max="9999999" step="1000" value="50000" oninput="syncAmountFromSlider(this.value)">
+                    <input type="range" id="loanAmountSlider" min="1000" max="1000000000" step="1000" value="50000" oninput="syncAmountFromSlider(this.value)">
                     <div class="flex justify-between text-[10px] text-slate-400 font-mono">
-                        <span>Min: <span class="currencySymbol">$</span>1.000</span>
-                        <span>Máx: <span class="currencySymbol">$</span>9.999.999</span>
+                        <span>Min: <span class="currencySymbol">$</span>1,00</span>
+                        <span>Máx: <span class="currencySymbol">$</span>999.999.999.999.999,99</span>
                     </div>
                 </div>
 
-                <!-- Input 2: Tasa de Interés Anual -->
+                <!-- Input 2: Tasa de Interés Anual (0.00% a 100.00%) -->
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <label for="interestRateInput" class="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">Tasa de Interés Anual (%)</label>
                         <div class="flex items-center space-x-1 font-bold text-sm text-cobalt-600 dark:text-cobalt-400">
-                            <input type="text" id="interestRateInput" oninput="handleRateInput(this)" class="w-20 text-right bg-slate-100 dark:bg-navy-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 font-mono focus:outline-none focus:ring-2 focus:ring-cobalt-500" value="12">
+                            <input type="text" id="interestRateInput" onblur="formatRateOnBlur(this)" oninput="handleRateInput(this)" class="w-24 text-right bg-slate-100 dark:bg-navy-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 font-mono focus:outline-none focus:ring-2 focus:ring-cobalt-500 text-xs sm:text-sm" value="12,00">
                             <span>%</span>
                         </div>
                     </div>
-                    <input type="range" id="interestRateSlider" min="0.5" max="100" step="0.5" value="12" oninput="syncRateFromSlider(this.value)">
+                    <input type="range" id="interestRateSlider" min="0" max="100" step="0.25" value="12" oninput="syncRateFromSlider(this.value)">
                     <div class="flex justify-between text-[10px] text-slate-400 font-mono">
-                        <span>0.5%</span>
-                        <span>Máx: 100%</span>
+                        <span>0,00%</span>
+                        <span>100,00%</span>
                     </div>
                 </div>
 
-                <!-- Input 3: Plazo en Meses -->
+                <!-- Input 3: Plazo en Meses (Entero) -->
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <label for="loanTermInput" class="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">Plazo de Pago (Meses)</label>
                         <div class="flex items-center space-x-1 font-bold text-sm text-cobalt-600 dark:text-cobalt-400">
-                            <input type="text" id="loanTermInput" oninput="handleTermInput(this)" class="w-20 text-right bg-slate-100 dark:bg-navy-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 font-mono focus:outline-none focus:ring-2 focus:ring-cobalt-500" value="36">
+                            <input type="text" id="loanTermInput" oninput="handleTermInput(this)" class="w-20 text-right bg-slate-100 dark:bg-navy-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 font-mono focus:outline-none focus:ring-2 focus:ring-cobalt-500 text-xs sm:text-sm" value="36">
                             <span>meses</span>
                         </div>
                     </div>
                     <input type="range" id="loanTermSlider" min="1" max="120" step="1" value="36" oninput="syncTermFromSlider(this.value)">
                     <div class="flex justify-between text-[10px] text-slate-400 font-mono">
                         <span>1 mes</span>
-                        <span>Máx: 120 meses (10 años)</span>
+                        <span>120 meses (10 años)</span>
                     </div>
                 </div>
 
@@ -261,44 +250,64 @@
                         <span id="badgeTerm" class="text-xs bg-slate-100 dark:bg-navy-800 text-slate-600 dark:text-slate-300 px-2.5 py-1 rounded-full font-mono">36 cuotas</span>
                     </h3>
 
-                    <!-- Cuota Mensual Destacada -->
-                    <div class="mt-4 bg-gradient-to-br from-navy-900 to-navy-800 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
+                    <!-- Cuota Mensual Destacada + Conversión BCV Botón Incorporado -->
+                    <div class="mt-4 bg-gradient-to-br from-navy-900 to-navy-800 text-white rounded-2xl p-5 sm:p-6 shadow-md relative overflow-hidden">
                         <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-cobalt-500/20 rounded-full blur-2xl"></div>
-                        <p class="text-xs font-medium uppercase tracking-wider text-slate-300">Cuota Mensual Fija (A)</p>
-                        <div class="mt-2 flex items-baseline space-x-1">
-                            <span class="text-2xl font-semibold currencySymbol">$</span>
-                            <span id="monthlyPaymentDisplay" class="text-4xl sm:text-5xl font-extrabold tracking-tight font-mono">0.00</span>
+                        
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <p class="text-xs font-medium uppercase tracking-wider text-slate-300">Cuota Mensual Fija (A)</p>
+                            
+                            <!-- BOTÓN DE CAMBIO MONETARIO A BCV -->
+                            <button id="bcvConvertBtn" onclick="toggleBcvConversion()" class="no-print text-xs font-bold bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center space-x-1.5">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                <span id="bcvBtnText">Convertir a Bolívares (BCV)</span>
+                            </button>
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-2 flex items-center space-x-1">
+
+                        <div class="mt-3 flex items-baseline space-x-1 overflow-x-auto">
+                            <span class="text-xl sm:text-2xl font-semibold currencySymbol">$</span>
+                            <span id="monthlyPaymentDisplay" class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-mono">0,00</span>
+                        </div>
+
+                        <!-- Banner Dinámico BCV -->
+                        <div id="bcvConversionBanner" class="hidden mt-3 p-2.5 bg-amber-500/20 border border-amber-500/40 rounded-xl text-xs text-amber-200 flex items-center justify-between">
+                            <span class="flex items-center space-x-1.5 font-mono">
+                                <i class="fa-solid fa-landmark text-amber-400"></i>
+                                <span id="bcvRateInfo">Tasa BCV aplicable: 1 USD = 860,17 Bs.</span>
+                            </span>
+                            <span class="font-bold text-amber-300" id="bcvConvertedCuota">Equivalente: 0,00 Bs.</span>
+                        </div>
+
+                        <p class="text-[11px] text-slate-400 mt-3 flex items-center space-x-1">
                             <i class="fa-solid fa-shield-halved text-emerald-400"></i>
-                            <span>Calculado bajo modalidad de Anualidad Vencida Fija.</span>
+                            <span>Anualidad Vencida Fija.</span>
                         </p>
                     </div>
 
-                    <!-- Métricas Secundarias -->
+                    <!-- Métricas Secundarias (Con 2 Decimales) -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
                         <div class="bg-slate-50 dark:bg-navy-950 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Monto Solicitado (P)</p>
-                            <p class="text-base sm:text-lg font-bold font-mono mt-0.5 text-slate-900 dark:text-white">
-                                <span class="currencySymbol">$</span><span id="kpiPrincipal">0</span>
+                            <p class="text-xs sm:text-base font-bold font-mono mt-0.5 text-slate-900 dark:text-white truncate">
+                                <span class="currencySymbol">$</span><span id="kpiPrincipal">0,00</span>
                             </p>
                         </div>
                         <div class="bg-slate-50 dark:bg-navy-950 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Total Intereses (I)</p>
-                            <p class="text-base sm:text-lg font-bold font-mono mt-0.5 text-amber-600 dark:text-amber-400">
-                                <span class="currencySymbol">$</span><span id="kpiTotalInterest">0</span>
+                            <p class="text-xs sm:text-base font-bold font-mono mt-0.5 text-amber-600 dark:text-amber-400 truncate">
+                                <span class="currencySymbol">$</span><span id="kpiTotalInterest">0,00</span>
                             </p>
                         </div>
                         <div class="col-span-2 sm:col-span-1 bg-slate-50 dark:bg-navy-950 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Pago Total (P + I)</p>
-                            <p class="text-base sm:text-lg font-bold font-mono mt-0.5 text-cobalt-600 dark:text-cobalt-400">
-                                <span class="currencySymbol">$</span><span id="kpiTotalPayment">0</span>
+                            <p class="text-xs sm:text-base font-bold font-mono mt-0.5 text-cobalt-600 dark:text-cobalt-400 truncate">
+                                <span class="currencySymbol">$</span><span id="kpiTotalPayment">0,00</span>
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Botones de Acción Secundaria (PDF & Dashboard) -->
+                <!-- Botones de Acción Secundaria -->
                 <div class="mt-5 pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-2 justify-between">
                     <button onclick="downloadPDF()" class="no-print text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg shadow-sm transition-all flex items-center space-x-1.5">
                         <i class="fa-solid fa-file-pdf"></i>
@@ -342,11 +351,11 @@
 
                 <!-- Gráfica 2: Diagrama de Flujo de Efectivo (Cash Flow Diagram) -->
                 <div class="bg-slate-50 dark:bg-navy-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 text-center">Diagrama Flujo de Efectivo (CFD)</h4>
-                    <div class="relative h-52 w-full">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 text-center">Diagrama Flujo de Efectivo</h4>
+                    <div class="relative h-52 w-full flex items-center justify-center">
                         <canvas id="cashFlowChart"></canvas>
                     </div>
-                    <p class="text-[11px] text-center text-slate-400 mt-2">Ingreso inicial (+P) en t=0 y serie uniforme de salidas (-A) en t=1..n.</p>
+                    <p class="text-[11px] text-center text-slate-400 mt-2">Estructura de cuota mensual separada por capital e intereses.</p>
                 </div>
 
                 <!-- Gráfica 3: Cuadro de Saldo Insoluto (Cash Balance Chart) -->
@@ -366,7 +375,7 @@
                     <i class="fa-solid fa-table-list text-cobalt-500"></i>
                     <span>Tabla de Amortización Mes a Mes</span>
                 </h3>
-                <span class="text-xs text-slate-400">Desglose exacto de cuotas bajo sistema francés</span>
+                <span class="text-xs text-slate-400">Valores exactos formateados con 2 decimales y coma (,)</span>
             </div>
 
             <!-- Contenedor Responsive con Scroll -->
@@ -404,10 +413,44 @@
                         El cálculo de la cuota fija mensual se fundamenta en la relación de equivalencia entre un valor presente $P$ y una serie de pagos uniformes $A$:
                     </p>
                     <div class="bg-white dark:bg-navy-900 p-2.5 rounded-lg text-center font-mono text-xs border border-slate-200 dark:border-slate-800 text-cobalt-600 dark:text-cobalt-400 font-bold">
-                        A = P × [ i(1 + i)^n ] / [ (1 + i)^n - 1 ]
+                        <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                            <mi>A</mi>
+                            <mo>=</mo>
+                            <mi>P</mi>
+                            <mo>&times;</mo>
+                            <mfrac>
+                                <mrow>
+                                <mi>i</mi>
+                                <msup>
+                                    <mrow>
+                                    <mo>(</mo>
+                                    <mn>1</mn>
+                                    <mo>+</mo>
+                                    <mi>i</mi>
+                                    <mo>)</mo>
+                                    </mrow>
+                                    <mi>n</mi>
+                                </msup>
+                                </mrow>
+                                <mrow>
+                                <msup>
+                                    <mrow>
+                                    <mo>(</mo>
+                                    <mn>1</mn>
+                                    <mo>+</mo>
+                                    <mi>i</mi>
+                                    <mo>)</mo>
+                                    </mrow>
+                                    <mi>n</mi>
+                                </msup>
+                                <mo>&minus;</mo>
+                                <mn>1</mn>
+                                </mrow>
+                            </mfrac>
+                        </math>
                     </div>
                     <p>
-                        Donde <code class="font-mono text-xs">i</code> representa la tasa efectiva mensual (<code class="font-mono text-xs">i_anual / 12</code>) y <code class="font-mono text-xs">n</code> es el número total de periodos de amortización.
+                        Donde <code class="font-mono text-xs">i</code> representa la tasa efectiva mensual (<code class="font-mono text-xs">i_anual / 12</code>) y <code class="font-mono text-xs">n</code> es el número entero de meses de amortización.
                     </p>
                 </div>
 
@@ -433,7 +476,7 @@
             </h3>
 
             <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-                <!-- Tarjeta Interactiva del Estudiante / Coordinador -->
+                <!-- Tarjeta Interactiva del Estudiante / Coordinador con Ladeo -->
                 <div id="studentCard" onclick="toggleStudentCard()" class="tilt-card cursor-pointer w-full sm:w-auto flex-1 bg-gradient-to-r from-navy-900 to-navy-800 text-white p-5 rounded-xl border border-slate-700 shadow-md hover:shadow-xl transition-all">
                     <div class="flex items-center space-x-4">
                         <div class="bg-cobalt-600 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-inner">
@@ -442,11 +485,11 @@
                         <div>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-cobalt-400 bg-cobalt-500/20 px-2 py-0.5 rounded-md">Coordinador del Equipo</span>
                             <h4 class="text-base font-bold mt-0.5">Manuel Rosales</h4>
-                            <p class="text-xs text-slate-300">Escuela de Ingeniería • UCAB 202715</p>
+                            <p class="text-xs text-slate-300">Escuela de Ingeniería • UCAB</p>
                         </div>
                     </div>
                     <p class="text-[11px] text-slate-400 mt-3 pt-2 border-t border-slate-700/60 flex items-center justify-between">
-                        <span><i class="fa-solid fa-hand-pointer mr-1"></i> Haz clic para ver información de contacto</span>
+                        <span><i class="fa-solid fa-hand-pointer mr-1"></i> Haz clic para activar ladeo y correo de contacto</span>
                         <i class="fa-solid fa-chevron-right text-xs"></i>
                     </p>
                 </div>
@@ -471,23 +514,51 @@
     <footer class="bg-navy-900 text-slate-400 text-xs py-4 border-t border-navy-800 mt-8">
         <div class="max-w-7xl mx-auto px-4 text-center space-y-1">
             <p>© 2026 Universidad Católica Andrés Bello (UCAB) - Cátedra de Ingeniería Económica.</p>
-            <p class="text-[10px] text-slate-500">Desarrollado para la evaluación de la Unidad Temática I • Profesor Oscar Jesús Quintero Arjona.</p>
+            <p class="text-[10px] text-slate-500">Desarrollado para la evaluación de la Unidad Temática I • Coordinador Manuel Rosales.</p>
         </div>
     </footer>
-
+    
     <script>
-        // Variables Globales de Estado
+        // Tasas Oficiales BCV
+        const BCV_RATES = {
+            '$': 860.17,
+            '€': 976.84,
+            '£': 1149.22,
+            'Bs.': 1.00
+        };
+
+        // Estado Global
         let currentCurrency = '$';
+        let isBcvActive = false;
         let pieChartInstance = null;
         let cashFlowChartInstance = null;
         let balanceChartInstance = null;
 
-        // Inicialización al cargar la página
+        // Función de Formateo Personalizada (Puntos para miles, Coma para decimales)
+        function formatSpanishNumber(number, decimals = 2) {
+            if (isNaN(number) || number === null || number === undefined) return "0,00";
+            const fixed = Number(number).toFixed(decimals);
+            const parts = fixed.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            return parts.join(',');
+        }
+
+        // Parsea cadena con formato español ("1.234,56") a número flotante JavaScript
+        function parseSpanishNumber(str) {
+            if (!str) return 0;
+            const cleaned = str.toString().replace(/\./g, '').replace(',', '.');
+            return parseFloat(cleaned) || 0;
+        }
+
+        function formatMoney(amount) {
+            const sym = isBcvActive ? 'Bs.' : currentCurrency;
+            return `${sym}${formatSpanishNumber(amount, 2)}`;
+        }
+
         window.onload = function() {
             calculateLoan(false);
         };
 
-        // Función para cambiar de tema (Modo Claro / Oscuro)
         function toggleDarkMode() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
@@ -500,54 +571,95 @@
                 html.classList.add('dark');
                 icon.className = 'fa-solid fa-sun text-sm';
             }
-            // Re-renderizar gráficas para actualizar colores de ejes
             calculateLoan(false);
         }
 
-        // Mostrar/Ocultar Instrucciones
         function toggleInstructions() {
             const panel = document.getElementById('instructionsPanel');
             panel.classList.toggle('hidden');
         }
 
-        // Cambio de Divisa
         function updateCurrency() {
             currentCurrency = document.getElementById('currencySelect').value;
             const symbols = document.querySelectorAll('.currencySymbol');
-            symbols.forEach(s => s.innerText = currentCurrency);
+            symbols.forEach(s => s.innerText = isBcvActive ? 'Bs.' : currentCurrency);
             calculateLoan(false);
         }
 
-        // Control estricto de entrada para Monto (máximo 7 dígitos)
+        // Toggle para Convertir a Bolívares (BCV)
+        function toggleBcvConversion() {
+            isBcvActive = !isBcvActive;
+            const btnText = document.getElementById('bcvBtnText');
+            const banner = document.getElementById('bcvConversionBanner');
+            const symbols = document.querySelectorAll('.currencySymbol');
+
+            if (isBcvActive) {
+                btnText.innerText = "Restablecer Divisa Original";
+                banner.classList.remove('hidden');
+                symbols.forEach(s => s.innerText = 'Bs.');
+            } else {
+                btnText.innerText = "Convertir a Bolívares (BCV)";
+                banner.classList.add('hidden');
+                symbols.forEach(s => s.innerText = currentCurrency);
+            }
+            calculateLoan(false);
+        }
+
+        // Manejo estricto de entrada para Monto (hasta 16 dígitos enteros + 2 decimales)
         function handleAmountInput(input) {
-            let value = input.value.replace(/[^0-9]/g, '');
-            if (value.length > 7) value = value.substring(0, 7);
-            const numericVal = parseInt(value) || 0;
-            input.value = numericVal.toLocaleString('en-US');
-            
-            const slider = document.getElementById('loanAmountSlider');
-            slider.value = Math.min(numericVal, 9999999);
+            let val = input.value.replace(/[^0-9,]/g, '');
+            const commaIndex = val.indexOf(',');
+            if (commaIndex !== -1) {
+                const integerPart = val.substring(0, commaIndex).replace(/,/g, '');
+                const decimalPart = val.substring(commaIndex + 1, commaIndex + 3).replace(/,/g, '');
+                const truncatedInteger = integerPart.substring(0, 16);
+                val = truncatedInteger + ',' + decimalPart;
+            } else {
+                val = val.substring(0, 16);
+            }
+            input.value = val;
+        }
+
+        function formatAmountOnBlur(input) {
+            const num = parseSpanishNumber(input.value);
+            input.value = formatSpanishNumber(num, 2);
+            document.getElementById('loanAmountSlider').value = Math.min(num, 1000000000);
         }
 
         function syncAmountFromSlider(val) {
-            const numericVal = parseInt(val) || 0;
-            document.getElementById('loanAmountInput').value = numericVal.toLocaleString('en-US');
+            const num = parseFloat(val) || 0;
+            document.getElementById('loanAmountInput').value = formatSpanishNumber(num, 2);
+            calculateLoan(false);
         }
 
-        // Control estricto para Tasa de Interés (máximo 100%)
+        // Manejo estricto para Tasa de Interés (0,00% a 100,00%)
         function handleRateInput(input) {
-            let value = input.value.replace(/[^0-9.]/g, '');
-            let numericVal = parseFloat(value) || 0;
-            if (numericVal > 100) numericVal = 100;
-            input.value = numericVal;
-            document.getElementById('interestRateSlider').value = numericVal;
+            let val = input.value.replace(/[^0-9,]/g, '');
+            const commaIndex = val.indexOf(',');
+            if (commaIndex !== -1) {
+                const intP = val.substring(0, commaIndex);
+                const decP = val.substring(commaIndex + 1, commaIndex + 3);
+                val = intP + ',' + decP;
+            }
+            input.value = val;
+        }
+
+        function formatRateOnBlur(input) {
+            let num = parseSpanishNumber(input.value);
+            if (num > 100) num = 100;
+            if (num < 0) num = 0;
+            input.value = formatSpanishNumber(num, 2);
+            document.getElementById('interestRateSlider').value = num;
+            calculateLoan(false);
         }
 
         function syncRateFromSlider(val) {
-            document.getElementById('interestRateInput').value = val;
+            const num = parseFloat(val) || 0;
+            document.getElementById('interestRateInput').value = formatSpanishNumber(num, 2);
+            calculateLoan(false);
         }
 
-        // Control estricto para Plazo (máximo 120 meses)
+        // Manejo estricto para Plazo (meses enteros limpios)
         function handleTermInput(input) {
             let value = input.value.replace(/[^0-9]/g, '');
             let numericVal = parseInt(value) || 0;
@@ -558,22 +670,24 @@
 
         function syncTermFromSlider(val) {
             document.getElementById('loanTermInput').value = val;
+            calculateLoan(false);
         }
 
-        // Función Principal de Cálculo Financiero
+        // Cálculo Financiero Principal
         function calculateLoan(animate = true) {
-            // Extraer y limpiar valores
-            const rawAmount = document.getElementById('loanAmountInput').value.replace(/,/g, '');
-            const P = Math.min(parseFloat(rawAmount) || 0, 999999999);
-            const annualRate = Math.min(parseFloat(document.getElementById('interestRateInput').value) || 0, 100);
-            const n = Math.min(parseInt(document.getElementById('loanTermInput').value) || 0, 120);
+            const baseP = parseSpanishNumber(document.getElementById('loanAmountInput').value);
+            const annualRate = parseSpanishNumber(document.getElementById('interestRateInput').value);
+            const n = parseInt(document.getElementById('loanTermInput').value) || 0;
 
-            if (P <= 0 || n <= 0) return;
+            if (baseP <= 0 || n <= 0) return;
 
-            // Tasa mensual efectiva
+            // Factor de Conversión BCV
+            const rateBcv = BCV_RATES[currentCurrency] || 1.0;
+            const multiplier = isBcvActive ? rateBcv : 1.0;
+
+            const P = baseP * multiplier;
             const i = (annualRate / 100) / 12;
 
-            // Cálculo de Cuota (Anualidad Vencida)
             let A = 0;
             if (i > 0) {
                 A = P * (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
@@ -584,26 +698,28 @@
             const totalPayment = A * n;
             const totalInterest = totalPayment - P;
 
-            // Actualizar KPIs en UI
-            document.getElementById('badgeTerm').innerText = `${n} cuotas`;
-            document.getElementById('kpiPrincipal').innerText = P.toLocaleString('en-US', {maximumFractionDigits: 0});
-            document.getElementById('kpiTotalInterest').innerText = totalInterest.toLocaleString('en-US', {maximumFractionDigits: 0});
-            document.getElementById('kpiTotalPayment').innerText = totalPayment.toLocaleString('en-US', {maximumFractionDigits: 0});
+            // Actualizar Banner BCV Informativo
+            document.getElementById('bcvRateInfo').innerText = `Tasa BCV: 1 ${currentCurrency} = ${formatSpanishNumber(rateBcv, 2)} Bs.`;
+            const cuotaEnBs = (A / multiplier) * rateBcv;
+            document.getElementById('bcvConvertedCuota').innerText = `Equivalente: ${formatSpanishNumber(cuotaEnBs, 2)} Bs.`;
 
-            // Animación de conteo para la cuota mensual
+            // Actualizar KPIs
+            document.getElementById('badgeTerm').innerText = `${n} cuotas`;
+            document.getElementById('kpiPrincipal').innerText = formatSpanishNumber(P, 2);
+            document.getElementById('kpiTotalInterest').innerText = formatSpanishNumber(totalInterest, 2);
+            document.getElementById('kpiTotalPayment').innerText = formatSpanishNumber(totalPayment, 2);
+
             if (animate) {
-                animateValue('monthlyPaymentDisplay', 0, A, 600);
+                animateValue('monthlyPaymentDisplay', 0, A, 500);
             } else {
-                document.getElementById('monthlyPaymentDisplay').innerText = A.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('monthlyPaymentDisplay').innerText = formatSpanishNumber(A, 2);
             }
 
-            // Generar Tabla de Amortización y Datos de Gráficas
             const schedule = generateAmortizationSchedule(P, i, n, A);
             renderTable(schedule);
             renderCharts(P, totalInterest, n, A, schedule);
         }
 
-        // Animación progresiva de números
         function animateValue(id, start, end, duration) {
             const obj = document.getElementById(id);
             let startTimestamp = null;
@@ -611,7 +727,7 @@
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 const current = progress * (end - start) + start;
-                obj.innerText = current.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                obj.innerText = formatSpanishNumber(current, 2);
                 if (progress < 1) {
                     window.requestAnimationFrame(step);
                 }
@@ -619,7 +735,6 @@
             window.requestAnimationFrame(step);
         }
 
-        // Generar matriz de amortización
         function generateAmortizationSchedule(P, i, n, A) {
             let balance = P;
             const schedule = [];
@@ -641,7 +756,6 @@
             return schedule;
         }
 
-        // Renderizar Tabla HTML
         function renderTable(schedule) {
             const tbody = document.getElementById('amortizationTableBody');
             tbody.innerHTML = '';
@@ -651,16 +765,15 @@
                 tr.className = 'hover:bg-slate-50 dark:hover:bg-navy-800/50 transition-colors';
                 tr.innerHTML = `
                     <td class="px-4 py-2.5 text-center font-bold text-slate-500">${row.month}</td>
-                    <td class="px-4 py-2.5 text-right font-semibold">${currentCurrency}${row.payment.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td class="px-4 py-2.5 text-right text-emerald-600 dark:text-emerald-400">${currentCurrency}${row.principal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td class="px-4 py-2.5 text-right text-amber-600 dark:text-amber-400">${currentCurrency}${row.interest.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td class="px-4 py-2.5 text-right text-slate-600 dark:text-slate-300">${currentCurrency}${row.balance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td class="px-4 py-2.5 text-right font-semibold">${formatMoney(row.payment)}</td>
+                    <td class="px-4 py-2.5 text-right text-emerald-600 dark:text-emerald-400">${formatMoney(row.principal)}</td>
+                    <td class="px-4 py-2.5 text-right text-amber-600 dark:text-amber-400">${formatMoney(row.interest)}</td>
+                    <td class="px-4 py-2.5 text-right text-slate-600 dark:text-slate-300">${formatMoney(row.balance)}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // Renderizar Gráficas con Chart.js
         function renderCharts(P, totalInterest, n, A, schedule) {
             const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#94a3b8' : '#475569';
@@ -688,44 +801,47 @@
                 }
             });
 
-            // 2. Diagrama de Flujo de Efectivo (Cash Flow Diagram)
+            // 2. Diagrama de Flujo de Efectivo (Cash Flow Chart)
             if (cashFlowChartInstance) cashFlowChartInstance.destroy();
-            const ctxCF = document.getElementById('cashFlowChart').getContext('2d');
-            
-            const cfLabels = ['t=0'];
-            const cfData = [P]; // Entrada positiva en t=0
-            
-            for (let m = 1; m <= n; m++) {
-                cfLabels.push(`t=${m}`);
-                cfData.push(-A); // Salidas negativas en t=1..n
-            }
+            const ctxCashFlow = document.getElementById('cashFlowChart').getContext('2d');
+            const flowLabels = schedule.map(s => `Mes ${s.month}`);
+            const principalData = schedule.map(s => s.principal);
+            const interestData = schedule.map(s => s.interest);
 
-            cashFlowChartInstance = new Chart(ctxCF, {
+            cashFlowChartInstance = new Chart(ctxCashFlow, {
                 type: 'bar',
                 data: {
-                    labels: cfLabels,
-                    datasets: [{
-                        label: 'Flujo Neto (FNE)',
-                        data: cfData,
-                        backgroundColor: cfData.map(v => v > 0 ? '#10b981' : '#ef4444')
-                    }]
+                    labels: flowLabels,
+                    datasets: [
+                        {
+                            label: 'Abono Capital',
+                            data: principalData,
+                            backgroundColor: '#2563eb'
+                        },
+                        {
+                            label: 'Interés Mes',
+                            data: interestData,
+                            backgroundColor: '#f59e0b'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        x: { ticks: { color: textColor, maxTicksLimit: 8 }, grid: { color: gridColor } },
-                        y: { ticks: { color: textColor }, grid: { color: gridColor } }
+                        x: { stacked: true, ticks: { color: textColor, maxTicksLimit: 8 }, grid: { color: gridColor } },
+                        y: { stacked: true, ticks: { color: textColor }, grid: { color: gridColor } }
                     },
-                    plugins: { legend: { display: false } }
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: textColor, font: { size: 10 } } }
+                    }
                 }
             });
 
-            // 3. Cuadro de Saldo Restante (Cash Balance Chart)
+            // 3. Cuadro de Saldo Restante
             if (balanceChartInstance) balanceChartInstance.destroy();
             const ctxBalance = document.getElementById('balanceChart').getContext('2d');
-            
-            const balLabels = [0, ...schedule.map(s => s.month)];
+            const balLabels = ['Inicio', ...schedule.map(s => `Mes ${s.month}`)];
             const balData = [P, ...schedule.map(s => s.balance)];
 
             balanceChartInstance = new Chart(ctxBalance, {
@@ -753,21 +869,18 @@
             });
         }
 
-        // Animación especial al hacer clic en la tarjeta del estudiante
+        // Ladeo de la Tarjeta de Manuel Rosales
         function toggleStudentCard() {
             const card = document.getElementById('studentCard');
             const contact = document.getElementById('contactInfo');
-            
             card.classList.toggle('tilt-active');
             contact.classList.toggle('hidden');
         }
 
-        // Desplazamiento suave
         function scrollToSection(id) {
             document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Exportación de PDF
         function downloadPDF() {
             const element = document.body;
             const opt = {
@@ -777,7 +890,6 @@
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
-
             html2pdf().set(opt).from(element).save();
         }
     </script>
